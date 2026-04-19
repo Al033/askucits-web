@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { CategoryFlow } from "@/lib/api";
 import { formatEUR, prettyCategory } from "@/lib/api";
 
@@ -33,10 +34,15 @@ export default function CategoryTable({ rows }: { rows: CategoryFlow[] }) {
             return (
               <tr
                 key={r.category}
-                className="border-b border-border last:border-0"
+                className="border-b border-border last:border-0 hover:bg-amber-50"
               >
                 <td className="px-4 py-3 font-medium">
-                  {prettyCategory(r.category)}
+                  <Link
+                    href={`/category/${r.category}`}
+                    className="hover:underline"
+                  >
+                    {prettyCategory(r.category)}
+                  </Link>
                 </td>
                 <td className="px-4 py-3 text-right text-muted">
                   {r.etp_count}
