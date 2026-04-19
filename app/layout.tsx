@@ -33,13 +33,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <main>{children}</main>
           <footer className="mt-20 border-t border-border pt-6 text-xs text-muted">
             <p>
-              Alan Boulhimez is Associate Director, UK Sales at WisdomTree
-              Europe. AskUcits.com Flow Radar is a personal editorial project.
-              WisdomTree products are covered using the same publicly documented
-              methodology as every other issuer; no special weighting, ranking,
-              or framing applies.
-            </p>
-            <p className="mt-3">
               Information only. Not investment advice. Not a financial
               promotion. ETPs can fall as well as rise; capital is at risk.
             </p>

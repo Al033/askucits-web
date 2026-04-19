@@ -77,4 +77,4 @@ MIT. See [LICENSE](LICENSE).
 
 ## Disclosure
 
-Alan Boulhimez is Associate Director, UK Sales at WisdomTree Europe. AskUcits.com Flow Radar is a personal editorial project. WisdomTree products are covered using the same publicly documented methodology as every other issuer; no special weighting, ranking, or framing applies.
+Information only. Not investment advice. Not a financial promotion. ETPs can fall as well as rise; capital is at risk.
