@@ -2,24 +2,45 @@ import CategoryTable from "@/components/CategoryTable";
 import CommentaryBlock from "@/components/CommentaryBlock";
 import DemoBanner from "@/components/DemoBanner";
 import TopMovers from "@/components/TopMovers";
-import { getLatestCommentary, getWeeklyByCategory } from "@/lib/api";
-import { getTopMovers } from "@/lib/demoData";
+import {
+  getLatestCommentary,
+  getLatestFlows,
+  getWeeklyByCategory,
+} from "@/lib/api";
 
 export const revalidate = 600; // 10 minutes; pipeline updates once per night.
 
 export default async function HomePage() {
-  const [categories, commentary] = await Promise.all([
+  const [categories, commentary, latestAll] = await Promise.all([
     getWeeklyByCategory(),
     getLatestCommentary(),
+    getLatestFlows(200),
   ]);
 
-  // Top movers use the synthetic DemoProduct type directly for now — they
-  // carry richer per-product context (ticker, issuer, 7d flow) than the
-  // compact LatestFlow API shape. When real data is live, swap this for a
-  // fetch of /api/v1/flows/latest and adapt the DemoProduct->LatestFlow
-  // shape inside TopMovers.
-  const inflows = getTopMovers("inflow", 8);
-  const outflows = getTopMovers("outflow", 8);
+  const withFlows = latestAll.filter(
+    (p) => p.estimated_net_flow_eur !== null && p.estimated_net_flow_eur !== 0,
+  );
+  const haveFlowData = withFlows.length > 0;
+
+  const inflows = haveFlowData
+    ? withFlows
+        .filter((p) => (p.estimated_net_flow_eur ?? 0) > 0)
+        .sort(
+          (a, b) => (b.estimated_net_flow_eur ?? 0) - (a.estimated_net_flow_eur ?? 0),
+        )
+        .slice(0, 8)
+    : latestAll
+        .slice()
+        .sort((a, b) => (b.aum_eur ?? 0) - (a.aum_eur ?? 0))
+        .slice(0, 8);
+  const outflows = haveFlowData
+    ? withFlows
+        .filter((p) => (p.estimated_net_flow_eur ?? 0) < 0)
+        .sort(
+          (a, b) => (a.estimated_net_flow_eur ?? 0) - (b.estimated_net_flow_eur ?? 0),
+        )
+        .slice(0, 8)
+    : [];
 
   return (
     <>
@@ -31,7 +52,11 @@ export default async function HomePage() {
 
       <section className="mb-10">
         <h2 className="mb-4 text-lg font-bold">Top movers</h2>
-        <TopMovers inflows={inflows} outflows={outflows} />
+        <TopMovers
+          inflows={inflows}
+          outflows={outflows}
+          mode={haveFlowData ? "live" : "awaiting"}
+        />
       </section>
 
       <section>
