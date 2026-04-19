@@ -7,7 +7,10 @@
  * contract is small enough to keep in one place.
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
+// Empty string -> same-origin, which hits the demo-data route handlers in
+// app/api/v1/. Set NEXT_PUBLIC_API_BASE to the live pipeline host (e.g.
+// https://api.askucits.com) to proxy the real data instead.
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "";
 
 export type Confidence = "high" | "medium" | "low";
 
@@ -60,7 +63,17 @@ async function fetchJson<T>(path: string, revalidate = 600): Promise<T | null> {
   }
 }
 
+// When API_BASE is empty we're in "demo mode" — skip HTTP entirely and read
+// the synthetic constants directly. Keeps the pages statically rendered at
+// build time without needing a running API and avoids the same-origin
+// relative-URL fetch error that breaks `next build`.
+const DEMO_MODE = API_BASE === "";
+
 export async function getWeeklyByCategory(): Promise<CategoryFlow[]> {
+  if (DEMO_MODE) {
+    const { DEMO_WEEKLY } = await import("./demoData");
+    return DEMO_WEEKLY.items as unknown as CategoryFlow[];
+  }
   const body = await fetchJson<{ count: number; items: CategoryFlow[] }>(
     "/api/v1/flows/weekly",
   );
@@ -68,6 +81,10 @@ export async function getWeeklyByCategory(): Promise<CategoryFlow[]> {
 }
 
 export async function getLatestFlows(limit = 25): Promise<LatestFlow[]> {
+  if (DEMO_MODE) {
+    const { DEMO_LATEST } = await import("./demoData");
+    return DEMO_LATEST.items.slice(0, limit) as unknown as LatestFlow[];
+  }
   const body = await fetchJson<{ count: number; items: LatestFlow[] }>(
     `/api/v1/flows/latest?limit=${limit}`,
   );
@@ -75,6 +92,10 @@ export async function getLatestFlows(limit = 25): Promise<LatestFlow[]> {
 }
 
 export async function getLatestCommentary(): Promise<LatestCommentary | null> {
+  if (DEMO_MODE) {
+    const { DEMO_COMMENTARY } = await import("./demoData");
+    return DEMO_COMMENTARY as unknown as LatestCommentary;
+  }
   return fetchJson<LatestCommentary>("/api/v1/commentary/latest", 3600);
 }
 

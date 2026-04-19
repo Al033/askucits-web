@@ -1,5 +1,6 @@
 import CategoryTable from "@/components/CategoryTable";
 import CommentaryBlock from "@/components/CommentaryBlock";
+import DemoBanner from "@/components/DemoBanner";
 import {
   getLatestCommentary,
   getWeeklyByCategory,
@@ -15,6 +16,8 @@ export default async function HomePage() {
 
   return (
     <>
+      <DemoBanner />
+
       <section className="mb-10">
         <CommentaryBlock commentary={commentary} />
       </section>
