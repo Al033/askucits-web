@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root {
+  --fg: #111111;
+  --muted: #6b6b6b;
+  --bg: #fafafa;
+  --card: #ffffff;
+  --border: #e5e5e5;
+  --in: #047857;
+  --out: #b91c1c;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: Georgia, "Times New Roman", Times, serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@theme inline {
+  --font-editorial: Georgia, "Times New Roman", Times, serif;
+  --color-in: var(--in);
+  --color-out: var(--out);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+  --color-border: var(--border);
+}
